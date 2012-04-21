@@ -1,0 +1,4 @@
+the server will have a main loop that processes join and connect requests, which
+will be served from a queue.  It will keep in local memory a list of online users.
+For every valid connection request, the server will spawn a new thread that handles
+communication between those two connected users.
