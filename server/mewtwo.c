@@ -62,16 +62,18 @@ void dump();
 
 int main(int argc, char **argv) {
     pthread_t server;
-    //pthread_create(&server, NULL, run_server, "...");
+    pthread_create(&server, NULL, run_server, "...");
     joins = create();
     connections = create();
     leaves = create();
+				/** this is for testing. normally the queue is populated from the 
+								fill_queue thread **/
     enqueue(joins, "join from 123.456.789.10");
     enqueue(joins, "join from 109.876.543.21");
     enqueue(joins, "join from www.princeton.edu/");
     enqueue(joins, "join from 222.222.222.22");
     enqueue(connections, "connect from user1 to user2");
-    enqueue(connections, "connect from user5 to user 8");
+    enqueue(connections, "connect from user5 to user8");
     dump();
     printf("dequeued %s from joins\n", dequeue(joins));
     printf("dequeued %s from joins\n", dequeue(joins));
@@ -81,9 +83,12 @@ int main(int argc, char **argv) {
 //#ifdef DEBUG
 
 void dump() {
+    printf("\n\n\t\t\tQUEUE DUMP\n");
+    printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
     printq(joins, "JOINS");
     printq(connections, "CONNECTIONS");
     printq(leaves, "LEAVES");
+    printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n");
 }
 
 //#endif

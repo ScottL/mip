@@ -5,7 +5,6 @@
 
 struct queue {
     int size;
-    QNODE *base;
     QNODE *first;
     QNODE *last;
 };
@@ -28,15 +27,12 @@ request_queue create(void) {
 }
 
 int init(request_queue q, char *p) {
-    q->base = malloc(sizeof(QNODE));
     q->first = malloc(sizeof(QNODE));
     q->last = malloc(sizeof(QNODE));
-    if (q->base == NULL || q->first == NULL || q->last == NULL)
+    if (q->first == NULL || q->last == NULL)
         return -1;
     q->first->ptr = p;
     q->first->next = NULL;
-    q->base->ptr = NULL;
-    q->base->next = q->first;
     q->size++;
     return 0;
 }
@@ -62,16 +58,14 @@ int enqueue(request_queue q, char *p) {
 char *dequeue(request_queue q) {
     QNODE *ret = malloc(sizeof(QNODE));
     ret = q->first;
-    q->base->next = q->first->next;
     q->first = q->first->next;
     q->size--;
-    //printf("dequeueing %s\n", (char *)(ret->ptr));
     return ret->ptr;
 }
 
-//#ifdef DEBUG
+#ifdef DEBUG
 void printq(request_queue q, char *tag) {
-    printf("\t\t\tCURRENT %s QUEUE\n", tag);
+    printf("\n\t\tCURRENT %s QUEUE\n", tag);
     printf("queue size: %d\n", q->size);
     if (q->size == 0) {
         printf("queue is empty..\n\n");
@@ -87,4 +81,4 @@ void printq(request_queue q, char *tag) {
     }
     printf("-------------------------------------------------------\n\n");
 }
-//#endif
+#endif
