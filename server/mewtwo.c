@@ -56,15 +56,10 @@ struct connection_bundle {
     int capacity;
 };
 
-void *run_server(void *);
 void *run_requests(void *);
 void *fill_queue(void *);
 void dump();
 
-
-/*Main Thread
-  calls method *run_server(void *)
-  */
 void *run_requests(void *arg){i
     if(size(joins) > 0){
         dequeue(joins);
