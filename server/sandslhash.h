@@ -9,8 +9,8 @@ typedef char * Val;
 
 hash create(void);
 bool contains(hash, Key);
-int hash(hash, Key);
+int HASH(hash, Key);
 void resize(hash);
 void put(hash, Key, Val);
-char *get(hash, Key);
+Val get(hash, Key);
 void remove(hash, Key);
