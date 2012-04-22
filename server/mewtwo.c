@@ -66,16 +66,17 @@ void dump();
   calls method *run_server(void *)
   */
 void *run_requests(void *arg){
+    char *ptr;
     if(size(joins) > 0){
-        dequeue(joins);
+        ptr = &(dequeue(joins));
         //add user to online pool
     }
     if(size(connections) > 0){
-        dequeue(connections);
+        ptr = &(dequeue(connections));
         //connect users
     }
     if(size(leaves) > 0){
-        dequeue(leaves);
+        ptr = &(dequeue(leaves));
         //remove user from online pool
     }
 }
