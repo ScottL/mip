@@ -57,10 +57,22 @@ struct connection_bundle {
 };
 
 void *run_server(void *);
+void *run_requests(void *);
 void *fill_queue(void *);
 void dump();
 
+
+/*Main Thread
+  calls method *run_server(void *)
+  */
+void *run_requests(void *arg){
+}
+
 int main(int argc, char **argv) {
+    pthread_t request;
+    pthread_create( &request, NULL, run_requests, 0);
+
+
     pthread_t server;
     pthread_create(&server, NULL, run_server, "...");
     joins = create();
