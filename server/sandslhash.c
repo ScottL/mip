@@ -1,44 +1,39 @@
 #include "sandslhash.h"
 
 struct sandslhash {
-				int size;
+				int N;
 				int M;	//size of linear probing table
 				Key keys[4];
 				Val vals[4];
 };
 
-hash create(void) {
-				hash h = malloc(sizeof(struct sandslhash));
+hash_table create_hash_table(void) {
+				hash_table h = malloc(sizeof(struct sandslhash));
 				h->M = 100; //THIS IS HIGHLY UNQUESTIONABLE! no evidence i.e citation needed
-				h->size = 4;
+				h->N = 4;
 				return h;
 }
 
-bool contains(hash, Key key) {
-				return get(hash, key) == NULL;
-}
+bool contains(hash_table h, Key key) { return get(h, key) == NULL; }
 
-int HASH(hash h, Key key) {
-				return (hash_code(h, key) & 0x7fffffff) % h->M;
-}
+int hash(hash_table h, Key key) { return (hash_code(h, key) & 0x7fffffff) % h->M; }
 
-int hash_code(hash h, Key key) {
+int hash_code(hash_table h, Key key) {
 				int hsh = 0;
 				char *ptr = key;
-				for (ptr = key; ptr != '\0'; ptr++)
-								hsh += *ptr + (31 * hsh);
+				for (ptr = key; ptr != '\0'; ptr++) hsh += *ptr + (31 * hsh);
 				return hsh;
 }
 
-void resize(hash h) {
+void resize(hash_table h, int size) {
 
 }
 
-void put(hash h, Key key, Val val) {
+void put(hash_table h, Key key, Val val) {
 				if (val == NULL) remove(key);
-				if (N >= M / 2) resize(2 * M);
+				if (h->N >= h->M / 2) resize(h, 2 * (h->M));
 				int i;
-				for (i = HASH(key); h->keys[i] != NULL; i = (i + 1) % h->M) {
+				for (i = hash(h, key); h->keys[i] != NULL; i = (i + 1) % h->M) {
 								if (strcmp(h->keys[i], key) == 0) {
 												h->vals[i] = val;
 												return;
@@ -49,14 +44,35 @@ void put(hash h, Key key, Val val) {
 				(h->N)++;
 }
 
-Val get(hash h, Key key) {
+Val get(hash_table h, Key key) {
 				int i;
-				for (i = HASH(h, key); h->keys[i] != NULL; i = (i + 1) % M)
+				for (i = hash(h, key); h->keys[i] != NULL; i = (i + 1) % h->M)
 								if (strcmp(h->keys[i], key) == 0)
 												return h->vals[i];
 }
 
-void remove(hash h, Key key) {
+void del_key(hash_table h, Key key) {
 				if (!contains(h, key)) return;
-				int i = HASH(h, key);
+				int i = hash(h, key);
+				while (strcmp(h->keys[i], key) != 0) {
+								i = (i + 1) % h->M;
+				}
+
+				h->keys[i] = NULL;
+				h->vals[i] = NULL;
+
+				i = (i + 1) % h->M;
+				while (h->keys[i] != NULL) {
+								Key key_rehash = h->keys[i];
+								Val val_rehash = h->vals[i];
+								h->keys[i] = NULL;
+								h->vals[i] = NULL;
+								(h->N)--;
+								put(h, key_rehash, val_rehash);
+								i = (i + 1) % h->M;
+				}
+
+				(h->N)--;
+
+				if (h->N > 0 && h->N <= (h->M / 8)) resize(h, h->M / 2);
 }

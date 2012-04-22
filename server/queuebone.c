@@ -18,7 +18,7 @@ int size(request_queue q) {
     return q->size;
 }
 
-request_queue create(void) {
+request_queue create_queue(void) {
     request_queue q = malloc(sizeof(struct queue));
     if (q == NULL)
         printf("error: queue not created\n");

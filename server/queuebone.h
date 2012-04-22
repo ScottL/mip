@@ -13,4 +13,4 @@ int enqueue(request_queue q , char *p);
 char *dequeue(request_queue q);
 int size(request_queue q );
 void printq(request_queue q, char *tag);
-request_queue create(void);
+request_queue create_queue(void);

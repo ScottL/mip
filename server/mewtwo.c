@@ -45,13 +45,18 @@
 #include <openssl/err.h>
 #include <openssl/bio.h>
 #include "queuebone.h"
+#include "sandslhash.h"
 
+#define PORT 7890
 #define PORT_LOW 7000
 #define PORT_HIGH 8000
 
 request_queue joins;
 request_queue connections;
 request_queue leaves;
+
+hash_table online_pool;
+hash_table conversation_bundles;
 
 struct connection_bundle {
     pthread_t thread;
@@ -96,9 +101,11 @@ void *run_requests(void *arg){
 int main(int argc, char **argv) {
     pthread_t request;
     pthread_create(&request, NULL, run_requests, 0);
-    joins = create();
-    connections = create();
-    leaves = create();
+    joins = create_queue();
+    connections = create_queue();
+    leaves = create_queue();
+				online_pool = create_hash_table();
+				conversation_bundles = create_hash_table();
 				/** this is for testing. normally the queue is populated from the 
 								fill_queue thread **/
     enqueue(joins, "join from 123.456.789.10");
@@ -140,7 +147,7 @@ void *fill_queue(void *arg) {
 				host_addr.sin_port = htons(PORT);
 				host_addr.sin_addr.s_addr = 0;
 				memset(&(host_addr.sin_zero), '\0', 8);
-				if (bind(sockfd, (struct sockaddr *)&host_addr, sizeof(struct sockadddr)) == -1)
+				if (bind(sockfd, (struct sockaddr *)&host_addr, sizeof(struct sockaddr)) == -1)
 								printf("error binding to socket\n");
 				//if (listen(sockfd, 
     while (1) {

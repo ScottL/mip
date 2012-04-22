@@ -3,14 +3,14 @@
 #include <string.h>
 #include <stdbool.h>
 
-typedef struct sandslhash *hash;
+typedef struct sandslhash *hash_table;
 typedef char * Key;
 typedef char * Val;
 
-hash create(void);
-bool contains(hash, Key);
-int HASH(hash, Key);
-void resize(hash);
-void put(hash, Key, Val);
-Val get(hash, Key);
-void remove(hash, Key);
+hash_table create_hash_table(void);
+bool contains(hash_table, Key);
+int hash(hash_table, Key);
+void resize(hash_table, int);
+void put(hash_table, Key, Val);
+Val get(hash_table, Key);
+void del_key(hash_table, Key);
