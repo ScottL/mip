@@ -46,7 +46,8 @@
 #include <openssl/bio.h>
 #include "queuebone.h"
 
-#define PORT 7890
+#define PORT_LOW 7000
+#define PORT_HIGH 8000
 
 request_queue joins;
 request_queue connections;
@@ -138,6 +139,10 @@ void *fill_queue(void *arg) {
 				host_addr.sin_family = AF_INET;
 				host_addr.sin_port = htons(PORT);
 				host_addr.sin_addr.s_addr = 0;
+				memset(&(host_addr.sin_zero), '\0', 8);
+				if (bind(sockfd, (struct sockaddr *)&host_addr, sizeof(struct sockadddr)) == -1)
+								printf("error binding to socket\n");
+				//if (listen(sockfd, 
     while (1) {
         //listen on socket; enqueue legit requests
         usleep(0.1);
