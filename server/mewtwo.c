@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
     dump();
 }
 
-//#ifdef DEBUG
+#ifdef DEBUG
 
 void dump() {
     printf("\n\n\t\t\tQUEUE DUMP\n");
@@ -91,7 +91,7 @@ void dump() {
     printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n");
 }
 
-//#endif
+#endif
 
 void *fill_queue(void *arg) {
     while (1) {
