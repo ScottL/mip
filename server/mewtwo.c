@@ -46,6 +46,8 @@
 #include <openssl/bio.h>
 #include "queuebone.h"
 
+#define PORT 7890
+
 request_queue joins;
 request_queue connections;
 request_queue leaves;
@@ -62,18 +64,29 @@ void dump();
 
 /*Main Thread
   */
+        //dequeue request
+        //if request == join:
+            //add user to online pool
+        //if request == leave:
+            //remove user from online pool
+        //if request == send_message:
+            //check other user online:
+                //relay message
+        //if request == connect:
+            //add to non-full thread
+                //if no non-full threads: create new thread
 void *run_requests(void *arg){
     char *ptr;
     if(size(joins) > 0){
-        ptr = &(dequeue(joins));
+        ptr = dequeue(joins);
         //add user to online pool
     }
     if(size(connections) > 0){
-        ptr = &(dequeue(connections));
+        ptr = dequeue(connections);
         //connect users
     }
     if(size(leaves) > 0){
-        ptr = &(dequeue(leaves));
+        ptr = dequeue(leaves);
         //remove user from online pool
     }
 }
@@ -82,10 +95,6 @@ void *run_requests(void *arg){
 int main(int argc, char **argv) {
     pthread_t request;
     pthread_create(&request, NULL, run_requests, 0);
-
-
-    pthread_t server;
-    pthread_create(&server, NULL, run_server, "...");
     joins = create();
     connections = create();
     leaves = create();
@@ -117,36 +126,20 @@ void dump() {
 #endif
 
 void *fill_queue(void *arg) {
+				int sockfd, new_sockfd;
+				struct sockaddr_in host_addr, client_addr;
+				socklen_t sin_size;
+				char buffer[1024];
+				int yes = 1;
+				if ((sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1)
+								printf("error creating socket\n");
+				if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+								printf("error setting socket options\n");
+				host_addr.sin_family = AF_INET;
+				host_addr.sin_port = htons(PORT);
+				host_addr.sin_addr.s_addr = 0;
     while (1) {
         //listen on socket; enqueue legit requests
-        usleep(0.1);
-    }
-}
-
-void *run_server(void *arg) {
-
-    /**********************************************************
-outgoing:
-      check_alive
-      relay_message
-incoming:
-      join
-      connect
-      leave
-      send_message
-      ********************************************************/
-    while(1) {
-        //dequeue request
-        //if request == join:
-            //add user to online pool
-        //if request == leave:
-            //remove user from online pool
-        //if request == send_message:
-            //check other user online:
-                //relay message
-        //if request == connect:
-            //add to non-full thread
-                //if no non-full threads: create new thread
         usleep(0.1);
     }
 }
