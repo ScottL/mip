@@ -60,7 +60,20 @@ void *run_server(void *);
 void *fill_queue(void *);
 void dump();
 
+
+/*Main Thread
+  calls method *run_server(void *)
+  */
+void processThread(void *arg){
+  
+
+}
+
 int main(int argc, char **argv) {
+    pthread_t requestProcess;
+    pthread_create( &requestProcess, NULL, main, 0);
+
+
     pthread_t server;
     pthread_create(&server, NULL, run_server, "...");
     joins = create();
