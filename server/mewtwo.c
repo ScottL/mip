@@ -57,6 +57,7 @@ struct connection_bundle {
 };
 
 void *run_server(void *);
+void *run_requests(void *);
 void *fill_queue(void *);
 void dump();
 
@@ -64,14 +65,12 @@ void dump();
 /*Main Thread
   calls method *run_server(void *)
   */
-void processThread(void *arg){
-  
-
+void *run_requests(void *arg){
 }
 
 int main(int argc, char **argv) {
-    pthread_t requestProcess;
-    pthread_create( &requestProcess, NULL, main, 0);
+    pthread_t request;
+    pthread_create( &request, NULL, run_requests, 0);
 
 
     pthread_t server;
