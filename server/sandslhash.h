@@ -14,3 +14,4 @@ void resize(hash_table, int);
 void put(hash_table, Key, Val);
 Val get(hash_table, Key);
 void del_key(hash_table, Key);
+void print_hash_table(hash_table);

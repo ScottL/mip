@@ -46,6 +46,7 @@
 #include <openssl/bio.h>
 #include "queuebone.h"
 #include "sandslhash.h"
+#include <mysql.h>
 
 #define PORT 7890
 #define PORT_LOW 7000
@@ -103,7 +104,7 @@ void *run_requests(void *arg){
 
 int main(int argc, char **argv) {
     pthread_t request;
-    pthread_create(&request, NULL, run_requests, 0);
+    //pthread_create(&request, NULL, run_requests, 0);
     joins = create_queue();
     connections = create_queue();
     leaves = create_queue();
@@ -111,16 +112,24 @@ int main(int argc, char **argv) {
 				conversation_bundles = create_hash_table(INIT_THREAD_BUNDLES);
 				/** this is for testing. normally the queue is populated from the 
 								fill_queue thread **/
-    enqueue(joins, "join from 123.456.789.10");
+    /*enqueue(joins, "join from 123.456.789.10");
     enqueue(joins, "join from 109.876.543.21");
     enqueue(joins, "join from www.princeton.edu/");
     enqueue(joins, "join from 222.222.222.22");
     enqueue(connections, "connect from user1 to user2");
-    enqueue(connections, "connect from user5 to user8");
-    dump();
-    printf("dequeued %s from joins\n", dequeue(joins));
-    printf("dequeued %s from joins\n", dequeue(joins));
-    dump();
+    enqueue(connections, "connect from user5 to user8");*/
+				put(online_pool, "user1\0", "password\0");
+				put(online_pool, "user2\0", "password2\0");
+				print_hash_table(online_pool);
+				printf("contains 'user1': %i\n", contains(online_pool, "user1"));
+				printf("contains 'user5': %i\n", contains(online_pool, "user5"));
+				printf("value of 'user2': %s\n", get(online_pool, "user2"));
+				del_key(online_pool, "user1");
+				print_hash_table(online_pool);
+    //dump();
+    /*printf("dequeued %s from joins\n", dequeue(joins));
+    printf("dequeued %s from joins\n", dequeue(joins));*/
+    //dump();
 }
 
 #ifdef DEBUG

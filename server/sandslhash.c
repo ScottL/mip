@@ -3,31 +3,34 @@
 struct sandslhash {
 				int N;
 				int M;	//size of linear probing table
-				Key keys[0];
-				Val vals[0];
+				Key *keys;
+				Val *vals;
 };
 
 hash_table create_hash_table(int size) {
 				hash_table h = malloc(sizeof(struct sandslhash));
 				h->M = size; //??????????????????
 				h->N = 0;
-				realloc(h->keys, sizeof(void *) * size);
-				realloc(h->vals, sizeof(void *) * size);
+				h->keys = malloc(sizeof(void *) * size);
+				h->vals = malloc(sizeof(void *) * size);
 				return h;
 }
 
-bool contains(hash_table h, Key key) { return get(h, key) == NULL; }
+bool contains(hash_table h, Key key) { return get(h, key) != NULL; }
 
 int hash(hash_table h, Key key) { return (hash_code(h, key) & 0x7fffffff) % h->M; }
 
 int hash_code(hash_table h, Key key) {
 				int hsh = 0;
-				char *ptr = key;
-				for (ptr = key; ptr != '\0'; ptr++) hsh += *ptr + (31 * hsh);
+				//char *ptr = key;
+				//for (ptr = key; ptr != '\0'; ptr++) hsh += *ptr + (31 * hsh);
+				int i;
+				for (i = 0; i < strlen(key); i++) hsh += key[i] + (31 * hsh);
 				return hsh;
 }
 
 void resize(hash_table h, int size) {
+				printf("resizing hash table...\n");
 				hash_table hold = create_hash_table(size);
 				int i;
 				for (i = 0; i < h->M; i++) {
@@ -90,4 +93,13 @@ void del_key(hash_table h, Key key) {
 				(h->N)--;
 
 				if (h->N > 0 && h->N <= (h->M / 8)) resize(h, h->M / 2);
+}
+
+void print_hash_table(hash_table h) {
+				int i;
+				printf("\n\t\tonline pool:\n");
+				for (i = 0; i < h->M; i++) {
+								printf("%s %s\n", h->keys[i], h->vals[i]);
+				}
+				printf("------------------------------\n\n");
 }
