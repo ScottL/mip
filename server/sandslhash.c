@@ -3,14 +3,16 @@
 struct sandslhash {
 				int N;
 				int M;	//size of linear probing table
-				Key keys[4];
-				Val vals[4];
+				Key keys[0];
+				Val vals[0];
 };
 
-hash_table create_hash_table(void) {
+hash_table create_hash_table(int size) {
 				hash_table h = malloc(sizeof(struct sandslhash));
-				h->M = 100; //THIS IS HIGHLY UNQUESTIONABLE! no evidence i.e citation needed
-				h->N = 4;
+				h->M = size; //??????????????????
+				h->N = 0;
+				realloc(h->keys, sizeof(void *) * size);
+				realloc(h->vals, sizeof(void *) * size);
 				return h;
 }
 
@@ -26,7 +28,20 @@ int hash_code(hash_table h, Key key) {
 }
 
 void resize(hash_table h, int size) {
-
+				hash_table hold = create_hash_table(size);
+				int i;
+				for (i = 0; i < h->M; i++) {
+								if (h->keys[i] != NULL) {
+												put(hold, h->keys[i], h->vals[i]);
+								}
+				}
+				realloc(h->keys, sizeof(void *) * size);
+				realloc(h->vals, sizeof(void *) * size);
+				for (i = 0; i < size; i++) {
+								h->keys[i] = hold->keys[i];
+								h->vals[i] = hold->vals[i];
+				}
+				h->M = hold->M;
 }
 
 void put(hash_table h, Key key, Val val) {

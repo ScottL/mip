@@ -51,6 +51,9 @@
 #define PORT_LOW 7000
 #define PORT_HIGH 8000
 
+#define INIT_USER_POOL 100
+#define INIT_THREAD_BUNDLES 5
+
 request_queue joins;
 request_queue connections;
 request_queue leaves;
@@ -104,8 +107,8 @@ int main(int argc, char **argv) {
     joins = create_queue();
     connections = create_queue();
     leaves = create_queue();
-				online_pool = create_hash_table();
-				conversation_bundles = create_hash_table();
+				online_pool = create_hash_table(INIT_USER_POOL);
+				conversation_bundles = create_hash_table(INIT_THREAD_BUNDLES);
 				/** this is for testing. normally the queue is populated from the 
 								fill_queue thread **/
     enqueue(joins, "join from 123.456.789.10");

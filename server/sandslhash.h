@@ -7,7 +7,7 @@ typedef struct sandslhash *hash_table;
 typedef char * Key;
 typedef char * Val;
 
-hash_table create_hash_table(void);
+hash_table create_hash_table(int);
 bool contains(hash_table, Key);
 int hash(hash_table, Key);
 void resize(hash_table, int);
