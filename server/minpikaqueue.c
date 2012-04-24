@@ -29,10 +29,10 @@ void resize_min_pq(min_pq m, int new_size) {
 				realloc(m->items, sizeof(char *) * (new_size + 1));
 }
 
-void insert(min_pq m, item key) {
+void insert(min_pq m, item item) {
 				if (m->size - 1 == m->num)
 								resize_min_pq(m, 2 * m->size);
-				m->items[++(m->num)] = key;
+				m->items[++(m->num)] = item;
 				swim(m, m->num);
 }
 
