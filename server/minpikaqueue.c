@@ -7,11 +7,16 @@ struct min_priority_queue {
     int (*compare)(const void *a, const void *b);
 };
 
-min_pq create_min_pq(int n) {
+void swap(min_pq, int, int);
+void swim(min_pq, int);
+void sink(min_pq, int);
+
+min_pq create_min_pq(int n, int (*com)(const void *a, const void *b)) {
 				min_pq mpq = malloc(sizeof(min_pq));
 				mpq->items = malloc(sizeof(char *) * (n + 1));
 				mpq->size = n;
 				mpq->num = 0;
+    mpq->compare = com;
 				return mpq;
 }
 
@@ -20,14 +25,14 @@ item min(min_pq m) {
 				return m->items[1];
 }
 
-void resize(min_pq m, int new_size) {
+void resize_min_pq(min_pq m, int new_size) {
 				realloc(m->items, sizeof(char *) * (new_size + 1));
 }
 
 void insert(min_pq m, item key) {
 				if (m->size - 1 == m->num)
-								resize(m, 2 * m->size);
-				m->items[++(m->num)] = x;
+								resize_min_pq(m, 2 * m->size);
+				m->items[++(m->num)] = key;
 				swim(m, m->num);
 }
 
@@ -62,16 +67,18 @@ void sink(min_pq m, int n) {
 }
 
 int greater(min_pq m, int a, int b) {
-    return compare(m->items[a], m->items[b]);
+    return m->compare(m->items[a], m->items[b]);
 }
 
 #ifdef DEBUG
-void print_min_pq(min_pq m, void (to_string)(void *p)) {
+void print_min_pq(min_pq m, char (*to_string)(void *p), char *s) {
     min_pq temp = malloc(sizeof(m));
     memcpy(temp, m, sizeof(m));
+    printf("\n***************printing %s priority queue****************\n", s);
     while (temp->num > 0) {
         item t = del_min(temp);
-
+        printf("%s\n", to_string(t));
     }
+    printf("*********************************************************\n\n");
 }
 #endif

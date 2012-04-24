@@ -10,7 +10,7 @@ typedef char * Val;
 hash_table create_hash_table(int);
 bool contains(hash_table, Key);
 int hash(hash_table, Key);
-void resize(hash_table, int);
+//void resize(hash_table, int);
 void put(hash_table, Key, Val);
 Val get(hash_table, Key);
 void del_key(hash_table, Key);

@@ -29,7 +29,7 @@ int hash_code(hash_table h, Key key) {
 				return hsh;
 }
 
-void resize(hash_table h, int size) {
+void resize_hash(hash_table h, int size) {
 				printf("resizing hash table...\n");
 				hash_table hold = create_hash_table(size);
 				int i;
@@ -49,7 +49,7 @@ void resize(hash_table h, int size) {
 
 void put(hash_table h, Key key, Val val) {
 				if (val == NULL) remove(key);
-				if (h->N >= h->M / 2) resize(h, 2 * (h->M));
+				if (h->N >= h->M / 2) resize_hash(h, 2 * (h->M));
 				int i;
 				for (i = hash(h, key); h->keys[i] != NULL; i = (i + 1) % h->M) {
 								if (strcmp(h->keys[i], key) == 0) {
@@ -92,7 +92,7 @@ void del_key(hash_table h, Key key) {
 
 				(h->N)--;
 
-				if (h->N > 0 && h->N <= (h->M / 8)) resize(h, h->M / 2);
+				if (h->N > 0 && h->N <= (h->M / 8)) resize_hash(h, h->M / 2);
 }
 
 void print_hash_table(hash_table h) {
