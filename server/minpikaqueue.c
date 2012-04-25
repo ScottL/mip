@@ -1,5 +1,12 @@
 #include "minpikaqueue.h"
 
+struct socket_bundle {
+    int socketfd;
+    int num;
+    int capacity;
+};
+typedef struct socket_bundle *SOCKET_BUNDLE;
+
 struct min_priority_queue {
 				int size;
 				int num;
@@ -41,6 +48,9 @@ item del_min(min_pq m) {
 				swap(m, 1, m->num);
 				item min = m->items[m->num--];
 				sink(m, 1);
+    m->items[m->num + 1] == NULL;
+    if ((m->num > 0) && (m->num == (m->size - 1) / 4)) resize_min_pq(m, m->size / 2);
+    return min;
 }
 
 void swap(min_pq m, int a, int b) {
@@ -60,24 +70,36 @@ void sink(min_pq m, int n) {
     while (2 * n <= m->num) {
         int j = 2 * n;
         if (j < m->num && greater(m, j, j + 1)) j++;
-        if (!greater(n, j)) break;
+        if (!greater(m, n, j)) break;
         swap(m, n, j);
         n = j;
     }
 }
 
 int greater(min_pq m, int a, int b) {
-    return m->compare(m->items[a], m->items[b]);
+    int (*jane)(const void *a, const void *b) = (m->compare);
+    void *srb = m->items[a];
+    void *cro = m->items[b];
+    return jane(srb, cro);
 }
 
 #ifdef DEBUG
-void print_min_pq(min_pq m, char (*to_string)(void *p), char *s) {
+void print_min_pq(min_pq m, char *(to_string)(void *p), char *s) {
     min_pq temp = malloc(sizeof(m));
-    memcpy(temp, m, sizeof(m));
+    temp->num = m->num;
+    temp->items = malloc(sizeof(void *) * (temp->num + 1));
+    int i;
+    temp->compare = m->compare;
+    for (i = 1; i < m->num + 1; i++) {
+        SOCKET_BUNDLE bar = malloc(sizeof(SOCKET_BUNDLE));
+        bar = m->items[i];
+        //printf("%d\n", bar->num);
+        temp->items[i] = m->items[i];
+    }
     printf("\n***************printing %s priority queue****************\n", s);
     while (temp->num > 0) {
         item t = del_min(temp);
-        printf("%s\n", to_string(t));
+        to_string(t);
     }
     printf("*********************************************************\n\n");
 }

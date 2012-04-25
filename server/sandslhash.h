@@ -1,7 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
+#include "mip.h"
 
 typedef struct sandslhash *hash_table;
 typedef char * Key;

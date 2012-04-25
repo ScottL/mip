@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #define DEBUG debug
 
 typedef struct node QNODE;

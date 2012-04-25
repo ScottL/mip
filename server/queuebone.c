@@ -1,6 +1,7 @@
 /** server request queue **/
 /** multiple queuebones should be used to handle different requests **/
 
+#include "mip.h"
 #include "queuebone.h"
 
 struct queue {
