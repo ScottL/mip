@@ -1,4 +1,8 @@
-#include "mip.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+#define DEBUG debug
 
 typedef struct min_priority_queue *min_pq;
 

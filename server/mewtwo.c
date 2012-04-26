@@ -22,10 +22,6 @@
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
  ************************************************************/
 #include "mewtwo.h"
-#include "sandslhash.h"
-#include "queuebone.h"
-#include "minpikaqueue.h"
-#include "mip.h"
 
 #define PORT 7890
 #define PORT_LOW 7000
@@ -45,43 +41,7 @@ hash_table conversation_bundles;
 pthread_t sockets[(PORT_HIGH - PORT_LOW) / PORTS_PER_THREAD];
 //pthread_t connections
 
-struct connection_bundle {
-    pthread_t thread;
-    int num;
-    int capacity;
-};
-
-struct socket_bundle {
-    int sockfd;
-    int num;
-    int capacity;
-};
-
-typedef struct connection_bundle *CONN_BUNDLE;
-typedef struct socket_bundle *SOCKET_BUNDLE;
-
-int compare_threads(const void *a, const void *b) {
-    CONN_BUNDLE ca = (CONN_BUNDLE)a;
-    CONN_BUNDLE cb = (CONN_BUNDLE)b;
-    return ca->num > cb->num;
-}
-
-int compare_sockets(const void *a, const void *b) {
-    SOCKET_BUNDLE sa = (SOCKET_BUNDLE)a;
-    SOCKET_BUNDLE sb = (SOCKET_BUNDLE)b;
-    return sa->num > sb->num;
-}
-
-char *string_socket(void *b) {
-   SOCKET_BUNDLE sb = (SOCKET_BUNDLE)b;
-   printf("socket.. num: %d\n", sb->num); 
-}
-
-void *run_requests(void *);
-void *fill_queue(void *);
-int compare_sockets(const void *, const void *);
-int compare_threads(const void *, const void *);
-void dump();
+//min_pq socket_bundles;
 
 void *run_requests(void *arg){
     char *ptr;
@@ -129,10 +89,10 @@ int main(int argc, char **argv) {
     printf("dequeued %s from joins\n", dequeue(joins));*/
     //dump();
     min_pq foo = create_min_pq(10, &compare_sockets);
-    SOCKET_BUNDLE ss[10];
+    SOCKET ss[10];
     int i;
     for (i = 0; i < 10; i++) {
-        ss[i] = malloc(sizeof(SOCKET_BUNDLE));
+        ss[i] = malloc(sizeof(SOCKET));
         ss[i]->capacity = 10;
         ss[i]->num = 10 - i;
         ss[i]->sockfd = i;
@@ -164,6 +124,14 @@ void dump() {
 
 #endif
 
+/* TEMPORARY PROTOCOL:
+   j = join
+    -> read ip address, username, password
+    -> read termination
+   l = leave
+    -> read ip address, username
+    -> read termination
+   */
 void *fill_queue(void *arg) {
 				int sockfd, new_sockfd;
 				struct sockaddr_in host_addr, client_addr;
@@ -186,14 +154,3 @@ void *fill_queue(void *arg) {
         usleep(0.1);
     }
 }
-        //dequeue request
-        //if request == join:
-            //add user to online pool
-        //if request == leave:
-            //remove user from online pool
-        //if request == send_message:
-            //check other user online:
-                //relay message
-        //if request == connect:
-            //add to non-full thread
-                //if no non-full threads: create new thread
