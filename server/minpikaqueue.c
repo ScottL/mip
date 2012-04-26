@@ -53,10 +53,15 @@ item del_min(min_pq m) {
     return min;
 }
 
+//Try using xor for this
 void swap(min_pq m, int a, int b) {
 				item temp = m->items[a];
 				m->items[a] = m->items[b];
 				m->items[b] = temp;
+        /* m->items[a] ^= m->items[b];
+           m->items[b] ^= m->items[a];
+           m->items[a] ^= m->items[b]; 
+        */
 }
 
 void swim(min_pq m, int n) {
