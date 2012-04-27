@@ -31,7 +31,7 @@ typedef struct socket *SOCKET;
 
 struct socket_bundle {
     pthread_t sthread;
-    SOCKET *sockets; //array of sockets
+    //SOCKET *sockets; //array of sockets
     int cap;
     int num_sockets;
     int size;
@@ -50,11 +50,12 @@ void dump_string(const unsigned char *data_buffer, const unsigned int length) {
     printf("\n");
 }
 
-void run_socket_bundle(SOCKETS sockets) {
+void *run_socket_bundles(void *sockets_v) {
+    SOCKETS sockets = (SOCKETS)sockets_v;
     int sockfds[sockets->cap];
     int i;
     while (1) {
-        for (i = sockets->port_low; i < sockets->port_high + 1; i++) {
+        for (i = 0; i < sockets->cap + 1; i++) {
             struct sockaddr_in host_addr, client_addr;
             int new_sockfd;
             socklen_t sin_size;
@@ -65,27 +66,36 @@ void run_socket_bundle(SOCKETS sockets) {
             if (setsockopt(sockfds[i], SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
                 printf("error setting socket options: run_socket_bundle()\n");
             host_addr.sin_family = AF_INET;
-            host_addr.sin_port = htons(i);
+            host_addr.sin_port = htons(i + sockets->port_low);
             host_addr.sin_addr.s_addr = 0;
             memset(&(host_addr.sin_zero), '\0', 8);
             if (bind(sockfds[i], (struct sockaddr *)&host_addr, sizeof(struct sockaddr)) == -1)
-                printf("error binding to socket %d: run_socket_bundle()\n", i);
+                printf("error binding to socket %d: run_socket_bundle()\n", i + sockets->port_low);
             if (listen(sockfds[i], 15) == -1)
                 printf("error listenig on socket %d: run_socket_bundle()\n", i);
+            printf("listening on socket %d\n", i + sockets->port_low);
             while (1) {
+                printf("0\n");
                 sin_size = sizeof(struct sockaddr_in);
+                usleep(1);
                 new_sockfd = accept(sockfds[i], (struct sockaddr *)&client_addr, &sin_size);
                 if (new_sockfd == -1)
                     printf("error accepting socket connection\n");
                 printf("server: received connection from %s port %d\n",
                         inet_ntoa(client_addr.sin_addr),
                         ntohs(client_addr.sin_port));
-                int recv_length = recv(new_sockfd, &buffer, sockets->req_buf_length, 0);
+                int recv_length = 0;
+                while (recv_length <= 0) {
+                    printf("1\n");
+                    recv_length = recv(new_sockfd, &buffer, sockets->req_buf_length, 0);
+                }
                 dump_string(buffer, recv_length);
                 close(new_sockfd);
-                usleep(0.1);
+                usleep(1);
             }
+            usleep(1);
         }
+        usleep(1);
     }
 }
 

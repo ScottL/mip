@@ -61,33 +61,24 @@ void *run_requests(void *arg){
 
 
 int main(int argc, char **argv) {
-    pthread_t request;
+    SOCKETS sockets = malloc(sizeof(struct socket_bundle));
+    pthread_t listen_t;
+    sockets->sthread = listen_t;
+    sockets->cap = 12;
+    sockets->num_sockets = 12;
+    sockets->port_low = 7010;
+    sockets->port_high = 8000;
+    int req_buf_length = 1024;
+    pthread_create(&listen_t, NULL, run_socket_bundles, sockets);
+    while (1) {
+        usleep(5);
+    }
     //pthread_create(&request, NULL, run_requests, 0);
-    joins = create_queue();
+    /*joins = create_queue();
     connections = create_queue();
     leaves = create_queue();
 				online_pool = create_hash_table(INIT_USER_POOL);
 				conversation_bundles = create_hash_table(INIT_THREAD_BUNDLES);
-				/** this is for testing. normally the queue is populated from the 
-								fill_queue thread **/
-    /*enqueue(joins, "join from 123.456.789.10");
-    enqueue(joins, "join from 109.876.543.21");
-    enqueue(joins, "join from www.princeton.edu/");
-    enqueue(joins, "join from 222.222.222.22");
-    enqueue(connections, "connect from user1 to user2");
-    enqueue(connections, "connect from user5 to user8");*/
-				/*put(online_pool, "user1\0", "password\0");
-				put(online_pool, "user2\0", "password2\0");
-				print_hash_table(online_pool);
-				printf("contains 'user1': %i\n", contains(online_pool, "user1"));
-				printf("contains 'user5': %i\n", contains(online_pool, "user5"));
-				printf("value of 'user2': %s\n", get(online_pool, "user2"));
-				del_key(online_pool, "user1");
-				print_hash_table(online_pool);*/
-    //dump();
-    /*printf("dequeued %s from joins\n", dequeue(joins));
-    printf("dequeued %s from joins\n", dequeue(joins));*/
-    //dump();
     min_pq foo = create_min_pq(10, &compare_sockets);
     SOCKET ss[10];
     int i;
