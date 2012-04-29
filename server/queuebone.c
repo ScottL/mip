@@ -38,10 +38,10 @@ int init(request_queue q, char *p) {
     return 0;
 }
 
-int enqueue(request_queue q, char *p) {
+void enqueue(request_queue q, char *p) {
     printf("***enqueueing %s***\n", (char *)p);
     if (q->size == 0)
-        return init(q, p);
+        init(q, p);
     QNODE *n = malloc(sizeof(QNODE));
     n->ptr = p;
     n->next = NULL;

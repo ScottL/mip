@@ -17,6 +17,7 @@ struct min_priority_queue {
 void swap(min_pq, int, int);
 void swim(min_pq, int);
 void sink(min_pq, int);
+int greater(min_pq, int, int);
 
 min_pq create_min_pq(int n, int (*com)(const void *a, const void *b)) {
 				min_pq mpq = malloc(sizeof(min_pq));
