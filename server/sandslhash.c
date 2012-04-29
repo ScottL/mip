@@ -16,6 +16,8 @@ hash_table create_hash_table(int size) {
 				return h;
 }
 
+int hash_code(hash_table, Key);
+
 bool contains(hash_table h, Key key) { return get(h, key) != NULL; }
 
 int hash(hash_table h, Key key) { return (hash_code(h, key) & 0x7fffffff) % h->M; }
@@ -67,6 +69,7 @@ Val get(hash_table h, Key key) {
 				for (i = hash(h, key); h->keys[i] != NULL; i = (i + 1) % h->M)
 								if (strcmp(h->keys[i], key) == 0)
 												return h->vals[i];
+    return NULL;
 }
 
 void del_key(hash_table h, Key key) {

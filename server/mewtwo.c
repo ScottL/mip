@@ -43,7 +43,7 @@ pthread_t sockets[(PORT_HIGH - PORT_LOW) / PORTS_PER_THREAD];
 
 //min_pq socket_bundles;
 
-void *run_requests(void *arg){
+void *run_requests(void *arg) {
     char *ptr;
     if(size(joins) > 0){
         ptr = dequeue(joins);
@@ -57,6 +57,7 @@ void *run_requests(void *arg){
         ptr = dequeue(leaves);
         //remove user from online pool
     }
+    return NULL;
 }
 
 
@@ -68,7 +69,7 @@ int main(int argc, char **argv) {
     sockets->num_sockets = 12;
     sockets->port_low = 7010;
     sockets->port_high = 8000;
-    int req_buf_length = 1024;
+    //int req_buf_length = 1024;
     pthread_create(&listen_t, NULL, run_socket_bundles, sockets);
     while (1) {
         usleep(5);
@@ -90,7 +91,7 @@ int main(int argc, char **argv) {
         insert(foo, ss[i]);
     }
     print_min_pq(foo, string_socket, "sockets");
-    /*SOCKET_BUNDLE a = malloc(sizeof(SOCKET_BUNDLE));
+    SOCKET_BUNDLE a = malloc(sizeof(SOCKET_BUNDLE));
     SOCKET_BUNDLE b = malloc(sizeof(SOCKET_BUNDLE));
     SOCKET_BUNDLE c = malloc(sizeof(SOCKET_BUNDLE));
     SOCKET_BUNDLE d = malloc(sizeof(SOCKET_BUNDLE));

@@ -59,7 +59,7 @@ void *run_socket_bundles(void *sockets_v) {
             struct sockaddr_in host_addr, client_addr;
             int new_sockfd;
             socklen_t sin_size;
-            char buffer[sockets->req_buf_length];
+            char unsigned buffer[sockets->req_buf_length];
             int yes = 1;
             if ((sockfds[i] = socket(PF_INET, SOCK_STREAM, 0)) == -1)
                 printf("error creating socket: run_socket_bundle()\n");
@@ -84,7 +84,7 @@ void *run_socket_bundles(void *sockets_v) {
                 printf("server: received connection from %s port %d\n",
                         inet_ntoa(client_addr.sin_addr),
                         ntohs(client_addr.sin_port));
-                int recv_length = 0;
+                unsigned int recv_length = 0;
                 while (recv_length <= 0) {
                     printf("1\n");
                     recv_length = recv(new_sockfd, &buffer, sockets->req_buf_length, 0);
@@ -115,7 +115,7 @@ int compare_socket_bundles(const void *a, const void *b) {
     return -1;
 }
 
-char *string_socket(void *b) {
+char string_socket(void *b) {
    SOCKET sb = (SOCKET)b;
    printf("socket.. num: %d\n", sb->num); 
 }
