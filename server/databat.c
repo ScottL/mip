@@ -12,9 +12,9 @@ MYSQL *connection;
 MYSQL_RES *result;
 MYSQL_ROW row;
 int num, i;
+char sql_str[1024000];
 
-
-int add_user(char *name, char *pwd) {
+int add_user(char *fullname, char *pass, char *email) {
 
     if (mysql_library_init(0, NULL, NULL)) {
         fprintf(stderr, "could not initialize MySQL library\n");
@@ -28,22 +28,22 @@ int add_user(char *name, char *pwd) {
         fprintf(stderr, "%s\n", mysql_error(connection));
         exit(1);
     }
+    
 
-    //mysql_query(connection, "INSERT INTO users VALUES(name, pass)");
+    //fullname, password, email, activity, date
+    sprintf(sql_str, "INSERT INTO users VALUES('%s', '%s', '%s', now(), now())",
+                  fullname, pass, email);
+    mysql_query(connection, sql_str);
 
-    /*
-    mysql_query(connection, "INSERT INTO users VALUES('Scott Lin', '123')");
-    mysql_query(connection, "INSERT INTO users VALUES('Greg Siano', '456')");
-    mysql_query(connection, "INSERT INTO users VALUES('First Last', 'pwd')");
-    mysql_query(connection, "INSERT INTO users VALUES('first last', 'a1-b2')");
-    */
 
     mysql_close(connection);
     mysql_library_end();
+    return -1;
 }
 
 
-int check_user(char *name, char *pwd){
+
+int check_user(char *fullname, char *pass, char *email){
 
     if (mysql_library_init(0, NULL, NULL)) {
         fprintf(stderr, "could not initialize MySQL library\n");
@@ -76,5 +76,32 @@ int check_user(char *name, char *pwd){
 
     mysql_close(connection);
     mysql_library_end();
+    return -1;
+}
+
+
+
+int update_user(char *fullname, char *email){
+    
+    if (mysql_library_init(0, NULL, NULL)) {
+        fprintf(stderr, "could not initialize MySQL library\n");
+        exit(1);
+    } 
+    connection = mysql_init(NULL);
+    mysql_options(connection, MYSQL_READ_DEFAULT_FILE, "/etc/mysql/my.cnf");
+    if (mysql_real_connect(connection, DB_HOST, DB_USER, DB_PASS, 
+                  "databat",0, NULL, 0) == NULL){
+        fprintf(stderr, "%s\n", mysql_error(connection));
+        exit(1);
+    }
+        
+    sprintf(sql_str, "UPDATE writers SET activity=now() WHERE email='%s'", email);
+    mysql_query(connection, sql_str);
+
+
+
+    mysql_close(connection);
+    mysql_library_end();
+    return -1;
 }
 
