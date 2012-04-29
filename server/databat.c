@@ -1,20 +1,38 @@
 #include <my_global.h>
 #include <mysql.h>
+#include <string.h>
 
 /* mysql host, user, password */
 #define DB_HOST "localhost"
 #define DB_USER "root"
 #define DB_PASS "rootpass"
 
-
+/******
+Database: databat
+Table: users
++----------+--------------+------+-----+---------+-------+
+| Field    | Type         | Null | Key | Default | Extra |
++----------+--------------+------+-----+---------+-------+
+| fullname | varchar(25)  | YES  |     | NULL    |       |
+| username | varchar(25)  | YES  |     | NULL    |       |
+| pass     | varchar(25)  | YES  |     | NULL    |       |
+| email    | varchar(100) | YES  |     | NULL    |       |
+| date     | date         | YES  |     | NULL    |       |
+| activity | date         | YES  |     | NULL    |       |
++----------+--------------+------+-----+---------+-------+
+******/
+/* Change username and email fields to unique, don't allow NULL attributes, 
+primary key */
 
 MYSQL *connection;
 MYSQL_RES *result;
 MYSQL_ROW row;
 int num, i;
-char sql_str[1024000];
+char *sql_str; //sql query string
 
-int add_user(char *fullname, char *pass, char *email) {
+/* Adds a user into the database. During registration
+    Still need sql injection protection */
+int add_user(char *fullname, char *username, char *pass, char *email) {
 
     if (mysql_library_init(0, NULL, NULL)) {
         fprintf(stderr, "could not initialize MySQL library\n");
@@ -24,17 +42,17 @@ int add_user(char *fullname, char *pass, char *email) {
     connection = mysql_init(NULL);
     mysql_options(connection, MYSQL_READ_DEFAULT_FILE, "/etc/mysql/my.cnf");
     if (mysql_real_connect(connection, DB_HOST, DB_USER, DB_PASS, 
-                  "databat",0, NULL, 0) == NULL){
+                    "databat",0, NULL, 0) == NULL){
         fprintf(stderr, "%s\n", mysql_error(connection));
         exit(1);
     }
     
-
-    //fullname, password, email, activity, date
-    sprintf(sql_str, "INSERT INTO users VALUES('%s', '%s', '%s', now(), now())",
-                  fullname, pass, email);
+    sql_str = (char*) malloc(300);
+    //fullname, username, password, email, date, activity
+    sprintf(sql_str, "INSERT INTO users VALUES('%s', '%s', '%s', '%s', now(), now())",
+                    fullname, username, pass, email);
     mysql_query(connection, sql_str);
-
+    free (sql_str);
 
     mysql_close(connection);
     mysql_library_end();
@@ -42,14 +60,17 @@ int add_user(char *fullname, char *pass, char *email) {
 }
 
 
+/* check if user exists in the databse */
+int check_user(char *username, char *pass, char *email){
 
-int check_user(char *fullname, char *pass, char *email){
-
+    //assuming we're checking against username
+    char *record;
+    record = (char*) malloc(30);
+ 
     if (mysql_library_init(0, NULL, NULL)) {
         fprintf(stderr, "could not initialize MySQL library\n");
         exit(1);
     }
-
     connection = mysql_init(NULL);
     mysql_options(connection, MYSQL_READ_DEFAULT_FILE, "/etc/mysql/my.cnf");
     if (mysql_real_connect(connection, DB_HOST, DB_USER, DB_PASS, 
@@ -57,8 +78,7 @@ int check_user(char *fullname, char *pass, char *email){
         fprintf(stderr, "%s\n", mysql_error(connection));
         exit(1);
     }
-
-
+    
     mysql_query(connection, "SELECT * FROM users");
     result = mysql_store_result(connection);
     num = mysql_num_fields(result);
@@ -68,12 +88,16 @@ int check_user(char *fullname, char *pass, char *email){
             against the arguments passed in(the user logging in 
             or something */
 
-            //test 
-            printf("%s\t", row[i] ? row[i] : "NULL");
+            strcpy(record, row[i] ? row[i] : "NULL");
+            if(strcmp(record, username) == 0){
+                /* There is a match in the table */
+            }
         } 
     }
-    mysql_free_result(result);
 
+
+    free (record);
+    mysql_free_result(result);
     mysql_close(connection);
     mysql_library_end();
     return -1;
@@ -81,8 +105,8 @@ int check_user(char *fullname, char *pass, char *email){
 
 
 
-int update_user(char *fullname, char *email){
-    
+/* updates the last date of activity */
+int update_user(char *username){ 
     if (mysql_library_init(0, NULL, NULL)) {
         fprintf(stderr, "could not initialize MySQL library\n");
         exit(1);
@@ -94,10 +118,12 @@ int update_user(char *fullname, char *email){
         fprintf(stderr, "%s\n", mysql_error(connection));
         exit(1);
     }
-        
-    sprintf(sql_str, "UPDATE writers SET activity=now() WHERE email='%s'", email);
+    
+    sql_str = (char*) malloc(125);
+    sprintf(sql_str, "UPDATE users SET activity=now() WHERE username='%s'",
+                    username);
     mysql_query(connection, sql_str);
-
+    free(sql_str);
 
 
     mysql_close(connection);
